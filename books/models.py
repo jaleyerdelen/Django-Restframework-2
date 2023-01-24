@@ -15,6 +15,7 @@ class Book(models.Model):
 class Comment(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="comments")
     comment = models.TextField(blank=True, null=True)
+    comment_owner = models.CharField(max_length=255)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     rating = models.PositiveIntegerField(
