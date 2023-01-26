@@ -3,6 +3,8 @@ from rest_framework.mixins import ListModelMixin, CreateModelMixin
 
 from rest_framework import generics
 from rest_framework.generics import get_object_or_404
+from rest_framework import permissions
+from books.api.permissions import IsAdminUserOrReadOnly
 
 from books.api.serializers import BookSerializer, CommentSerializer
 from books.models import Book, Comment
@@ -11,14 +13,19 @@ from books.models import Book, Comment
 class BookListCreateAPIView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [IsAdminUserOrReadOnly] #sadece admin create işlemleri yapabilecek
 
 class BookDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [IsAdminUserOrReadOnly] #sadece admin detail'i update edebilecek
+
 
 class CommentCreateAPIView(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
 
     #manipulation
     def perform_create(self, serializer):
@@ -30,3 +37,5 @@ class CommentCreateAPIView(generics.CreateAPIView):
 class CommentDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
