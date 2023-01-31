@@ -8,3 +8,8 @@ class IsAdminUserOrReadOnly(permissions.IsAdminUser):
         #değilse de is_admin olup olmadığına bak
         return request.method in permissions.SAFE_METHODS or is_admin
 
+class IsCommentOwnerOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user == obj.comment_owner #false gelirse başka kullanıcının yorumuna müdahale edemez sadece görebilir
