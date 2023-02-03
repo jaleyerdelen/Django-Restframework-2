@@ -6,15 +6,17 @@ from rest_framework.generics import get_object_or_404
 from rest_framework import permissions
 from rest_framework.exceptions import ValidationError
 from books.api.permissions import IsAdminUserOrReadOnly, IsCommentOwnerOrReadOnly
+from books.api.pagination import SmallPagination, LargePagination
 
 from books.api.serializers import BookSerializer, CommentSerializer
 from books.models import Book, Comment
 
 #Concrete View
 class BookListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Book.objects.all()
+    queryset = Book.objects.all().order_by("-id")
     serializer_class = BookSerializer
     permission_classes = [IsAdminUserOrReadOnly] #sadece admin create işlemleri yapabilecek
+    #pagination_class = SmallPagination
 
 class BookDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()

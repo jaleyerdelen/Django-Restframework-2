@@ -9,6 +9,8 @@ django.setup()
 #user modelimizi çekebilmek için kullandık yukarıdakileri
 
 from django.contrib.auth.models import User
+import requests
+from books.api.serializers import BookSerializer
 
 import os
 from dotenv import load_dotenv
@@ -44,3 +46,36 @@ def set_user():
     user.set_password({USER_KEY})
     user.save()
     print("User is saved", u_name)
+
+
+def add_book(topic):
+    fake = Faker(['en_US'])
+    url = "https://openlibrary.org/search.json?q=love"
+    payload = {"q": topic}
+    response = requests.get(url, params=payload)
+
+    if response.status_code != 200:
+        print("wrong request", response.status_code)
+        return
+
+    jsn = response.json()
+    books = jsn.get("docs")
+    print("booksss",books[0])
+   
+    for book in books:
+        book_name = book.get("title")
+        data = dict(
+            name = book_name,
+            author = book.get("author_name")[0],
+            description = '-'.join(book.get('subject') if isinstance(book.get('subjects'),list) else [] ),
+            publish_date = fake.date_time_between(start_date="-10y", end_date="now", tzinfo=None),
+        )
+        print("data", data)
+
+        serializer = BookSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            print("book was saved", book_name)
+        else:
+            continue
+
